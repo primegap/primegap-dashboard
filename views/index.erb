@@ -1,0 +1,20 @@
+<h1 class="page-header">Apps</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Tier</th>
+      <th>Last Updated</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @apps.each do |app| %>
+    <tr>
+      <td><a href="/apps/<%= app['name'] %>"><%= app['name'] %></a></td>
+      <td><%= app['process_tier'] %></td>
+      <td><%= Time.zone.parse(app['updated_at']).strftime('%H:%M:%S %a %d %B %Y') %></td>
+    </tr>
+  <% end -%>
+  </tbody>
+</table>

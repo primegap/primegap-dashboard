@@ -1,0 +1,92 @@
+<h1 class="page-header">App <%= @app['name'] %></h1>
+
+<div id="chart_container">
+  <div id="y_axis"></div>
+  <div id="chart"></div>
+</div>
+
+<div id="metrics">
+  <div class="row">
+    <h3 class="col-md-3">Throughput</h3>
+    <h3 class="col-md-9">Response Time</h3>
+  </div>
+  <div class="row">
+    <div class="metric col-md-3" data-display="sum" data-label=" rpm" data-type="requests">
+      <div class="value">Current: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-3" data-chartable-value="50" data-display="median" data-label=" ms" data-type="response_time">
+      <div class="value">Median: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-3" data-chartable-value="95" data-display="perc95" data-label=" ms" data-type="response_time">
+      <div class="value">95th Percentile: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-3" data-display="max" data-label=" ms" data-type="response_time">
+      <div class="value">Max: <strong class="data">0</strong></div>
+    </div>
+  </div>
+  <div class="row">
+    <h3 class="col-md-6">Load</h3>
+    <h3 class="col-md-6">Memory</h3>
+  </div>
+  <div class="row">
+    <div class="metric col-md-2" data-display="max" data-label="" data-type="load_avg_1m">
+      <div class="value">1m: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-2" data-display="max" data-label="" data-type="load_avg_5m">
+      <div class="value">5m: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-2" data-display="max" data-label="" data-type="load_avg_15m">
+      <div class="value">15m: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-2" data-display="average" data-label=" MB" data-type="memory_rss">
+      <div class="value">RSS: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-2" data-display="average" data-label=" MB" data-type="memory_swap">
+      <div class="value">Swap: <strong class="data">0</strong></div>
+    </div>
+    <div class="metric col-md-2" data-display="average" data-label=" MB" data-type="memory_total">
+      <div class="value">Total: <strong class="data">0</strong></div>
+    </div>
+  </div>
+</div>
+
+<h2>Dynos</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Size</th>
+      <th>State</th>
+      <th>Started</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @dynos.sort_by{ |d| d['name'] }.each do |dyno| %>
+    <tr>
+      <td><%= dyno['name'] %></td>
+      <td><%= dyno['type'] %></td>
+      <td><%= dyno['size'] %></td>
+      <td><%= dyno['state'] %></td>
+      <td><%= Time.zone.parse(dyno['created_at']).strftime('%H:%M:%S %a %d %B %Y') %></td>
+      <td>
+        <form action="/dyno/restart" method="post">
+          <input type="hidden" name="dyno_name" value="<%= dyno['name'] %>">
+          <input type="hidden" name="app_name" value="<%= @app['name'] %>">
+          <button class="btn btn-primary">Restart</button>
+        </form>
+      </td>
+    </tr>
+  <% end -%>
+  </tbody>
+</table>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/rickshaw/1.5.1/rickshaw.min.js"></script>
+<script type="text/javascript" src="/app_metrics.js"></script>
+<script type="text/javascript">
+  $(function() { streamLogs('<%= @app['name'] %>'); });
+</script>
